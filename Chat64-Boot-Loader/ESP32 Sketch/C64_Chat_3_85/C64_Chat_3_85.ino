@@ -5,6 +5,9 @@
 #include "utils.h"
 #include "wifi_core.h"
 #include "prgfile.h"
+#include <WiFiUdp.h>
+#include <OSCMessage.h>
+
 Preferences settings;
 
 //bool invert_reset_signal = false ;  // READ THIS:  If this settings is wrong, the program will never start because reset is hold down constant.
@@ -52,6 +55,8 @@ char multiMessageBufferPriv[3500];
 unsigned long first_check=0;
 WiFiCommandMessage commandMessage;
 WiFiResponseMessage responseMessage;
+WiFiUDP Udp;
+
 
 
 // ********************************
@@ -180,7 +185,9 @@ void create_Task_WifiCore(){
 //  SETUP
 // *************************************************
 void setup() {
-  
+
+  Udp.begin(8888); // Local UDP port to open (8888 or any unused)
+
   Serial.begin(115200);
 
 #ifdef VICE_MODE
@@ -1144,6 +1151,28 @@ void loop() {
 #endif
 
   }  // end of "if (dataFromC64)"
+
+void sendOSCMessage(const char* address, const char* value) {
+  if (strlen(oscServerIP) == 0 || strlen(oscServerPort) == 0) {
+    return; // No server configured
+  }
+
+  IPAddress remoteIP;
+  if (!remoteIP.fromString(oscServerIP)) {
+    return; // Invalid IP
+  }
+
+  uint16_t remotePort = atoi(oscServerPort);
+
+  OSCMessage msg(address); // Create a message for the given OSC address
+  msg.add(value);          // Add the value as a string argument
+
+  Udp.beginPacket(remoteIP, remotePort);
+  msg.send(Udp); // Send the message
+  Udp.endPacket();
+  msg.empty();   // Free buffer space
+}
+
 
 }  // end of main loop
 
