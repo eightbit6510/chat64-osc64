@@ -1512,23 +1512,22 @@ rts
 !:  lda #1                                        // we need the first element from the RXBUFFER (osc ip)
     sta $02                                       // store 1 (1=first element) in $02
 jsr !splitRXbuffer-                              // copy the first element to Splitbuffer
-    displayText(SPLITBUFFER,6,18)                 // Display the buffer (containing osc ip) on screen
+    displayText(SPLITBUFFER,6,19)                 // Display the buffer (containing osc ip) on screen
                                                   // 
     lda #2                                        // now we need the second element from the RX buffer (osc port)
     sta $02                                       // so we put #2 in address $02
     jsr !splitRXbuffer-                          // and call the split routine to copy the element to the Splitbuffer
-    displayText(SPLITBUFFER,8,18)                 // Display the buffer (containing osc port) on screen
+    displayText(SPLITBUFFER,8,19)                 // Display the buffer (containing osc port) on screen
                                                   // Now we need a text input box so the user can change the ip and port
 !fill_fields:                                     // Set the limits to where the cursor can travel
     lda #5                                        // Load 2 into accumulator
     sta MENU_ID                                   // and store it as the ID of this menu
     lda #6                                        // Load 6 into accumulator
     sta HOME_LINE                                 // Store 6 into Home_line variable, so the cursor van not go above line 4
-    lda #18                                       // Load 7 into accumulator
-    sta HOME_COLM                                 // Store 7 into home_column variable, so the cursor can not go below 7
-    lda #6                                        // Load 4 into accumulator
     sta LIMIT_LINE                                // Store 4 into limit_line variable so the cursor van not go below line 4
-    lda #39                                       // Load 39 into accumulator
+    lda #19                                       // Load 7 into accumulator
+    sta HOME_COLM                                 // Store 7 into home_column variable, so the cursor can not go below 7
+    lda #35                                       // Load 39 into accumulator
     sta LIMIT_COLM                                // Store 39 into the limit_column so the cursor can not go beyond that position
     lda #1                                        // Load 1 intop accumulator
     sta CLEAR_FIELD_FLAG                          // and SET clear text flag to 1 (default is zero)
@@ -1538,9 +1537,9 @@ jsr !splitRXbuffer-                              // copy the first element to Sp
     lda #8                                        // Load 6 into accumulator
     sta HOME_LINE                                 // Store 6 into Home_line variable, so the cursor van not go above line 22
     sta LIMIT_LINE                                // Store 6 into limit_line variable so the cursor van not go below line 24
-    lda #18                                       // Load 11 into accumulator
+    lda #19                                       // Load 11 into accumulator
     sta HOME_COLM                                 // Store 11 into home_column variable, so the cursor can not go below 10
-    lda #23                                       // Load 5 into accumulator
+    lda #24                                       // Load 5 into accumulator
     sta LIMIT_COLM                                // Store 5 into the limit_column so the cursor can not go beyond that position
     lda #1                                        // 
     sta CLEAR_FIELD_FLAG                          // 
@@ -1619,6 +1618,9 @@ jsr !splitRXbuffer-                              // copy the first element to Sp
     beq !m1+                                      // We do not want to clear the lines
     cmp #2                                        // If menu ID is 2,
     beq !m1+                                      // We do not want to clear the line
+    cmp #5                                        // If menu ID is 5,
+    beq !m1+                                      // We do not want to clear the line
+
     lda SEND_ERROR                                // Load the Send_error flag
     cmp #1                                        // if it contains 1,
     beq !m1+                                      // we do not want to clear the lines
