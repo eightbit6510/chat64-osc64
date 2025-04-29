@@ -1461,6 +1461,136 @@ jsr !start_menu_screen-                           //
    // it makes sense to create a routine for this
    displayText(text_about_footer,24,8)
 rts
+
+//=========================================================================================================
+//    MENU OSC SETUP
+//=========================================================================================================
+// send byte 231 to get the osc destination ip and port
+//=========================================================================================================
+!osc_setup:                                   // 
+    lda #255                                      //
+    sta DELAY                                     //
+    jsr !checkWiFi+                               // check if we have wifi   
+    jsr !start_menu_screen-                       // 
+    lda #10 ; sta _LINE_POS_                      // Load 10 into accumulator and store it in zero page address $fb
+    jsr !draw_menu_line+                          // Call the draw_menu_line sub routine to draw a line on row 8
+    lda #20 ; sta _LINE_POS_                      // Load 20 into accumulator and store it in zero page address $fb
+    jsr !draw_menu_line+                          // Call the draw_menu_line sub routine to draw a line on row 20
+    displayText(text_osc_menu,1,15)           // Display the menu title on line 1, row 15,
+!ac_wifi_check:                                   //
+    lda HAVEWIFI                                  //
+    cmp #1                                        //
+    beq !+                                        //
+    displayText(text_any_key,21,7)                //
+    displayText(text_error_no_internet,4,1)       //
+    jsr !wait_for_a_key+                          //
+    jmp !mainmenu-                                //
+!:  lda #10 ; sta _LINE_POS_                      // Load 10 into accumulator and store it in zero page address $fb
+    jsr !draw_menu_line+                          // Call the draw_menu_line sub routine to draw a line on row 8
+    displayText(text_osc_ip,4,1)             // Display static text "osc ip:" on line 4, row 1,  
+    displayText(text_osc_port,6,1)           // Display static text "osc port:" on line 6, row 1,  
+    
+    lda #10 ; sta _LINE_POS_                      // Load 10 into accumulator and store it in zero page address $fb
+    jsr !draw_menu_line+                          // Call the draw_menu_line sub routine to draw a line on row 10
+    jsr !display_F7_menuItem+                     // Display "[ F7 ] exit menu" on line 15, row 1.  
+                                                  //
+    lda VICEMODE                                  // \                                  
+    cmp #1                                        //  \ Skip receiving the data from the cartridge if the cartridge is not attachted! 
+    bne !+                                        //  /  
+    jmp !fill_fields+                             // /   
+                                                  // 
+!sendcmd:                                         // 
+!:  lda #231                                      // load the number #231
+    sta CMD                                       // Store that in variable CMD
+    jsr !send_start_byte_ff+                      // Call the sub routine to send 231 to the esp32 to ask for the osc ip and port
+    lda TIMOUTERROR                               // RXBUFFER now contains Osc_IP[32]Osc_port[5]
+    cmp #1                                        //
+    bne !+                                        //           
+    jsr !delay+                                   //
+    jmp !sendcmd-                                 //
+                                                  //
+!:  lda #1                                        // we need the first element from the RXBUFFER (osc ip)
+    sta $02                                       // store 1 (1=first element) in $02
+jsr !splitRXbuffer+                               // copy the first element to Splitbuffer
+    displayText(SPLITBUFFER,4,14)                 // Display the buffer (containing osc ip) on screen
+                                                  // 
+    lda #2                                        // now we need the second element from the RX buffer (osc port)
+    sta $02                                       // so we put #2 in address $02
+    jsr !splitRXbuffer+                           // and call the split routine to copy the element to the Splitbuffer
+    displayText(SPLITBUFFER,6,18)                 // Display the buffer (containing osc port) on screen
+                                                  // Now we need a text input box so the user can change the ip and port
+!fill_fields:                                     // Set the limits to where the cursor can travel
+    lda #5                                        // Load 2 into accumulator
+    sta MENU_ID                                   // and store it as the ID of this menu
+    lda #6                                        // Load 4 into accumulator
+    sta HOME_LINE                                 // Store 4 into Home_line variable, so the cursor van not go above line 4
+    lda #18                                       // Load 7 into accumulator
+    sta HOME_COLM                                 // Store 7 into home_column variable, so the cursor can not go below 7
+    lda #6                                        // Load 4 into accumulator
+    sta LIMIT_LINE                                // Store 4 into limit_line variable so the cursor van not go below line 4
+    lda #39                                       // Load 39 into accumulator
+    sta LIMIT_COLM                                // Store 39 into the limit_column so the cursor can not go beyond that position
+    lda #1                                        // Load 1 intop accumulator
+    sta CLEAR_FIELD_FLAG                          // and SET clear text flag to 1 (default is zero)
+    lda #31                                       //
+    sta CURSORCOLOR                               //
+    jsr !text_input+                              // Call the text input routine, we will be back when the user presses RETURN
+    lda #8                                        // Load 6 into accumulator
+    sta HOME_LINE                                 // Store 6 into Home_line variable, so the cursor van not go above line 22
+    sta LIMIT_LINE                                // Store 6 into limit_line variable so the cursor van not go below line 24
+    lda #12                                       // Load 11 into accumulator
+    sta HOME_COLM                                 // Store 11 into home_column variable, so the cursor can not go below 10
+    lda #17                                       // Load 5 into accumulator
+    sta LIMIT_COLM                                // Store 5 into the limit_column so the cursor can not go beyond that position
+    lda #1                                        // 
+    sta CLEAR_FIELD_FLAG                          // 
+    lda #149                                      //
+    sta CURSORCOLOR                               //
+    jsr !text_input+                              // Call the text input routine, we will be back when the user presses RETURN
+    jsr !hide_cursor-                             // Hide the cursor
+                                                  // 
+    displayText(text_save_settings,13,3)          // Display "[ F1 Save settings" on line 13, row 3 
+                                                  // 
+!keyinput:                                        // At this point the user can select F1 or F7 to Save settings and Test settings, or exit the menu
+                                                  // 
+    jsr !wait_for_a_key+                          //
+    cmp #133                                      // F1 key pressed?
+    beq !save_settings+                           // If true, save the osc settings
+    cmp #136                                      // F7 key pressed?
+    beq !exit_menu+                               // If true, exit to main menu.
+    jmp !keyinput-                                // Ignore all other keys and wait for user input again
+                                                  // 
+!exit_menu:                                       // F7 Pressed!
+                                                  // We reached the end so
+    jmp !mainmenu-                                // we jump back to main menu
+                                                  // 
+!save_settings:                                   // Read the registration code from screen into the TXBUFFER
+
+                                                  // 
+    ldx #22 ; jsr $E9FF                           // Clear line 22
+    inx ; jsr $E9FF                               // Clear line 23
+    displayText(text_settings_saved,23,6)         // 
+                                                  // 
+    lda #255                                      // Delay 255... hamsters
+    sta DELAY                                     // Store 255 in the DELAY variable
+    jsr !delay+                                   // and call the delay subroutine
+    jsr !delay+                                   // a few times
+    jsr !delay+                                   // a few times
+    jsr !delay+                                   // a few times
+    jsr !delay+                                   // a few times
+    jmp !osc_setup                           // Rinse and repeat
+                                                  // 
+                                                  // 
+!loop_forever:                                    //                              
+    jsr !delay+                                   //           
+    jsr !delay+                                   //
+    jsr !delay+                                   //
+    jmp !reset_for_real-                          // Loop forever and wait for the ESP32 to reset the C64
+                                                  // 
+
+
+
+
 //=========================================================================================================
 //    Function to wait for a key input
 //=========================================================================================================
