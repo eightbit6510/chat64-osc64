@@ -3348,7 +3348,23 @@ P_COLBLOCK600:                .fill 256,0         //
 P_COLBLOCK700:                .fill 256,0         //  
 debug_in:                     .byte 0             //                                 
 TIMEOUT1:                     .byte 0             //                                
-TIMEOUT2:                     .byte 0             //                           
+TIMEOUT2:                     .byte 0             //            
+// --- BEGIN ADDED CODE: OSC + Paddle Variables ---
+osc_target_ip:     .fill 32, $20
+osc_target_port:   .fill 6,  $20
+
+potx1_target:      .fill 32, $20
+poty1_target:      .fill 32, $20
+potx2_target:      .fill 32, $20
+poty2_target:      .fill 32, $20
+
+cue_list:          .fill 10*32, $20 // 10 lines of 32 bytes each
+last_potx1:        .byte 0
+last_poty1:        .byte 0
+last_potx2:        .byte 0
+last_poty2:        .byte 0
+// --- END ADDED CODE: OSC + Paddle Variables ---
+
 //=========================================================================================================
 // MACROS
 //=========================================================================================================
