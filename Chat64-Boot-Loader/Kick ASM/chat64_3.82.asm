@@ -1524,7 +1524,7 @@ jsr !splitRXbuffer-                              // copy the first element to Sp
     sta MENU_ID                                   // and store it as the ID of this menu
     lda #6                                        // Load 4 into accumulator
     sta HOME_LINE                                 // Store 4 into Home_line variable, so the cursor van not go above line 4
-    lda #22                                       // Load 7 into accumulator
+    lda #18                                       // Load 7 into accumulator
     sta HOME_COLM                                 // Store 7 into home_column variable, so the cursor can not go below 7
     lda #6                                        // Load 4 into accumulator
     sta LIMIT_LINE                                // Store 4 into limit_line variable so the cursor van not go below line 4
@@ -1538,9 +1538,9 @@ jsr !splitRXbuffer-                              // copy the first element to Sp
     lda #8                                        // Load 6 into accumulator
     sta HOME_LINE                                 // Store 6 into Home_line variable, so the cursor van not go above line 22
     sta LIMIT_LINE                                // Store 6 into limit_line variable so the cursor van not go below line 24
-    lda #22                                       // Load 11 into accumulator
+    lda #12                                       // Load 11 into accumulator
     sta HOME_COLM                                 // Store 11 into home_column variable, so the cursor can not go below 10
-    lda #27                                       // Load 5 into accumulator
+    lda #22                                       // Load 5 into accumulator
     sta LIMIT_COLM                                // Store 5 into the limit_column so the cursor can not go beyond that position
     lda #1                                        // 
     sta CLEAR_FIELD_FLAG                          // 
@@ -3268,8 +3268,8 @@ text_save_settings:           .byte 147; .text "[ F1 ] Save Settings"; .byte 128
 text_exit_menu:               .byte 147; .text "[ F7 ] Exit Menu"; .byte 128
 
 text_osc_menu:                   .byte 151; .text "OSC SETUP"; .byte 128
-text_osc_ip:                    .byte 145; .text "OSC Destination IP:"; .byte 128
-text_osc_port:                  .byte 145; .text "OSC Destination port:"; .byte 128
+text_osc_ip:                    .byte 145; .text "OSC IP:"; .byte 128
+text_osc_port:                  .byte 145; .text "OSC Port:"; .byte 128
 
 
 text_output_menu:             .byte 151; .text "OUTPUT SETUP  "; .byte 213,94,145
