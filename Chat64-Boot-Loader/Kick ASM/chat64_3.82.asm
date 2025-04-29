@@ -1573,7 +1573,7 @@ jsr !splitRXbuffer-                              // copy the first element to Sp
     sta READLIMIT                                 //
     jsr !read_from_screen+                        // Read the ip address from screen into the TXBUFFER
     jsr !wait_for_ready_to_receive+               // Prepare the ESP to receive
-    lda #230                                      // Load 230 in accumulator
+    lda #229                                      // Load 230 in accumulator
     sta _IO1_                                     // Send the start byte (230 = send new registration code)
     jsr !send_buffer+                             // Send the new registration code to the ESP32
                                                   // Read the port from screen into the TXBUFFER
