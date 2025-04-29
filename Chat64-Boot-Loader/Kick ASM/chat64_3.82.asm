@@ -3267,6 +3267,11 @@ text_server_menu:             .byte 151; .text "SERVER SETUP  ";.byte 213,94,145
 text_save_settings:           .byte 147; .text "[ F1 ] Save Settings"; .byte 128
 text_exit_menu:               .byte 147; .text "[ F7 ] Exit Menu"; .byte 128
 
+text_osc_menu:                   .byte 151; .text "OSC SETUP"; .byte 128
+text_osc_ip:                    .byte 145; .text "OSC Destination IP:"; .byte 128
+text_osc_port:                  .byte 145; .text "OSC Destination port:"; .byte 128
+
+
 text_output_menu:             .byte 151; .text "OUTPUT SETUP  "; .byte 213,94,145
 text_status:                  .text "Output to printer Status:"; .byte 128                                                                                                                    
 text_enabled:                 .byte 213,15,158; .text "Enabled "; .byte 128                                                                                                                                         
