@@ -436,6 +436,7 @@ void loop() {
     // 232 = check for admin message
     // 231 = receive admin messages
     // 230 = browse admin messages
+    // 229 = C64 sends new OSC IP and Port number to ESP32
     // 228 = debug purposes
     // 128 = end marker, ignore
 
