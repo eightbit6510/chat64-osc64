@@ -1500,7 +1500,7 @@ rts
     jmp !fill_fields+                             // /   
                                                   // 
 !sendcmd:                                         // 
-!:  lda #231                                      // load the number #231
+!:  lda #227                                      // load the number #231
     sta CMD                                       // Store that in variable CMD
     jsr !send_start_byte_ff+                      // Call the sub routine to send 231 to the esp32 to ask for the osc ip and port
     lda TIMOUTERROR                               // RXBUFFER now contains Osc_IP[15]Osc_port[5]
