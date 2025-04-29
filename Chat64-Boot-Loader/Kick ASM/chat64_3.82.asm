@@ -3250,7 +3250,7 @@ text_menu_item_1:             .byte 147; .text "[ F1 ] Wifi Setup"; .byte 128
 text_menu_item_2:             .byte 147; .text "[ F2 ] Account Setup";.byte 128
 text_menu_item_3:             .byte 147; .text "[ F3 ] List Users";.byte 128
 text_menu_item_4:             .byte 147; .text "[ F4 ] Server Setup";.byte 128
-text_menu_item_6:             .byte 147; .text "[ F5 ] Help";.byte 128
+text_menu_item_6:             .byte 147; .text "[ F5 ] OSC Setup";.byte 128
 text_menu_item_5:             .byte 147; .text "[ F6 ] About This Software";.byte 128
 text_menu_item_8:             .byte 147; .text "[ F8 ] Output Setup";.byte 128
 text_version:                 .byte 151; .text "Version";.byte 128
