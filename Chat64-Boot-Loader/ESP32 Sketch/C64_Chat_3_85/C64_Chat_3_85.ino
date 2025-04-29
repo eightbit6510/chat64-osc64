@@ -53,6 +53,7 @@ unsigned long first_check=0;
 WiFiCommandMessage commandMessage;
 WiFiResponseMessage responseMessage;
 
+
 // ********************************
 // **        OUTPUTS             **
 // ********************************
@@ -1067,6 +1068,43 @@ void loop() {
             // send the message to the c64
           }
 
+          break;
+        }
+  case 229:
+        {
+          // ------------------------------------------------------------------------------
+          // start byte 229 = C64 sends the new osc ip and port to ESP32
+          // ------------------------------------------------------------------------------
+          receive_buffer_from_C64(2);
+          for (int x = 0; x < inbuffersize; x++) {
+            inbuffer[x] = screenCode_to_Ascii(inbuffer[x]);
+          }
+          // inbuffer now contains "osc_ip and port"
+          char bns[inbuffersize + 1];
+          strncpy(bns, inbuffer, inbuffersize + 1);
+          String ns = bns;
+
+          oscServerIP = getValue(ns, 129, 0);
+          oscServerIP.trim();
+#ifdef debug
+          Serial.println(oscServerIP);
+#endif
+          if (oscServerIP.length() != 16) {
+#ifdef debug
+            Serial.println("ip should be something like 192.168.178.005    15 chars in total");
+#endif
+            break;
+          }
+          oscServerPort = getValue(ns, 129, 1);
+          oscServerPort.trim();
+#ifdef debug
+          Serial.println(oscServerPort);
+#endif
+
+          settings.begin("mysettings", false);
+          settings.putString("oscServerIP", oscServerIP);
+          settings.putString("oscServerPort", oscServerPort);
+          settings.end();
           break;
         }
       case 228:
