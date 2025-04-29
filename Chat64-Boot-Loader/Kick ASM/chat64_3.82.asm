@@ -1487,8 +1487,8 @@ rts
     jmp !mainmenu-                                //
 !:  lda #10 ; sta _LINE_POS_                      // Load 10 into accumulator and store it in zero page address $fb
     jsr !draw_menu_line+                          // Call the draw_menu_line sub routine to draw a line on row 8
-    displayText(text_osc_ip,6,1)             // Display static text "osc ip:" on line 4, row 1,  
-    displayText(text_osc_port,8,1)           // Display static text "osc port:" on line 6, row 1,  
+    displayText(text_osc_ip,6,1)             // Display static text "osc ip:" on line 6, row 1,  
+    displayText(text_osc_port,8,1)           // Display static text "osc port:" on line 8, row 1,  
     
     lda #10 ; sta _LINE_POS_                      // Load 10 into accumulator and store it in zero page address $fb
     jsr !draw_menu_line+                          // Call the draw_menu_line sub routine to draw a line on row 10
@@ -1522,8 +1522,8 @@ jsr !splitRXbuffer-                              // copy the first element to Sp
 !fill_fields:                                     // Set the limits to where the cursor can travel
     lda #5                                        // Load 2 into accumulator
     sta MENU_ID                                   // and store it as the ID of this menu
-    lda #6                                        // Load 4 into accumulator
-    sta HOME_LINE                                 // Store 4 into Home_line variable, so the cursor van not go above line 4
+    lda #6                                        // Load 6 into accumulator
+    sta HOME_LINE                                 // Store 6 into Home_line variable, so the cursor van not go above line 4
     lda #18                                       // Load 7 into accumulator
     sta HOME_COLM                                 // Store 7 into home_column variable, so the cursor can not go below 7
     lda #6                                        // Load 4 into accumulator
@@ -1538,9 +1538,9 @@ jsr !splitRXbuffer-                              // copy the first element to Sp
     lda #8                                        // Load 6 into accumulator
     sta HOME_LINE                                 // Store 6 into Home_line variable, so the cursor van not go above line 22
     sta LIMIT_LINE                                // Store 6 into limit_line variable so the cursor van not go below line 24
-    lda #12                                       // Load 11 into accumulator
+    lda #18                                       // Load 11 into accumulator
     sta HOME_COLM                                 // Store 11 into home_column variable, so the cursor can not go below 10
-    lda #22                                       // Load 5 into accumulator
+    lda #23                                       // Load 5 into accumulator
     sta LIMIT_COLM                                // Store 5 into the limit_column so the cursor can not go beyond that position
     lda #1                                        // 
     sta CLEAR_FIELD_FLAG                          // 
