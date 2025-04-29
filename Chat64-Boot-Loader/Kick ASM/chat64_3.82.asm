@@ -1512,12 +1512,12 @@ rts
 !:  lda #1                                        // we need the first element from the RXBUFFER (osc ip)
     sta $02                                       // store 1 (1=first element) in $02
 jsr !splitRXbuffer-                              // copy the first element to Splitbuffer
-    displayText(SPLITBUFFER,4,14)                 // Display the buffer (containing osc ip) on screen
+    displayText(SPLITBUFFER,6,18)                 // Display the buffer (containing osc ip) on screen
                                                   // 
     lda #2                                        // now we need the second element from the RX buffer (osc port)
     sta $02                                       // so we put #2 in address $02
     jsr !splitRXbuffer-                          // and call the split routine to copy the element to the Splitbuffer
-    displayText(SPLITBUFFER,6,18)                 // Display the buffer (containing osc port) on screen
+    displayText(SPLITBUFFER,8,18)                 // Display the buffer (containing osc port) on screen
                                                   // Now we need a text input box so the user can change the ip and port
 !fill_fields:                                     // Set the limits to where the cursor can travel
     lda #5                                        // Load 2 into accumulator
