@@ -1563,8 +1563,28 @@ jsr !splitRXbuffer-                              // copy the first element to Sp
                                                   // We reached the end so
     jmp !mainmenu-                                // we jump back to main menu
                                                   // 
-!save_settings:                                   // Read the registration code from screen into the TXBUFFER
-
+!save_settings:                                   // Read the ip address from screen into the TXBUFFER
+                                                  // \
+    lda #$03                                      //  \
+    sta _FIELD_                                   //   The registration code starts at screen memory location: $0503
+    lda #$05                                      //  /
+    sta _FIELD_ +1                                // /
+    lda #15                                       // set the number of characters to read to 15
+    sta READLIMIT                                 //
+    jsr !read_from_screen+                        // Read the ip address from screen into the TXBUFFER
+    jsr !wait_for_ready_to_receive+               // Prepare the ESP to receive
+    lda #240                                      // Load 240 in accumulator
+    sta _IO1_                                     // Send the start byte (240 = send new registration code)
+    jsr !send_buffer+                             // Send the new registration code to the ESP32
+                                                  // Read the port from screen into the TXBUFFER
+    lda #$53                                      // 
+    sta _FIELD_                                   // - The nick name is at screen memory location: $0553
+    lda #5                                       // Set the number of characters to read to 11
+    sta READLIMIT                                 //
+    jsr !read_from_screen+                        // Read the registration code from screen into the TXBUFFER
+                                                  // At this point we have the nick name, from the screen, in the txbuffer
+    jsr !wait_for_ready_to_receive+               // Prepare the ESP to receive
+    jsr !send_buffer+                             // Send the new portto the ESP32
                                                   // 
     ldx #22 ; jsr $E9FF                           // Clear line 22
     inx ; jsr $E9FF                               // Clear line 23
@@ -1577,8 +1597,36 @@ jsr !splitRXbuffer-                              // copy the first element to Sp
     jsr !delay+                                   // a few times
     jsr !delay+                                   // a few times
     jsr !delay+                                   // a few times
-    jmp !osc_setup-                           // Rinse and repeat
+    jmp !account_setup-                           // Rinse and repeat
                                                   // 
+!reset_factory:                                   // 
+                                                  // 
+    jsr !hide_cursor-                             // Hide the cursor
+    jsr $e544                                     // Clear screen
+                                                  // 
+    displayText(text_reset_shure,13,10);          // 
+                                                  // 
+!keyinput:                                        // 
+    jsr !wait_for_a_key+                          //
+    cmp #138                                      // F4 pressed?
+    beq !reset_for_real+                          // If true, we are going to default settings
+    jmp !account_setup-                           // No, second thoughts, go back to config screen.
+                                                  // 
+!reset_for_real:                                  // 
+    jsr !delay+                                   // 
+    jsr !wait_for_ready_to_receive+               // User has selected and confirmed 'reset to factory defaults' function
+    lda #244                                      // Load 244 in accumulator
+    sta _IO1_                                     // Send the start byte 244 (244 = reset to factory defaults)
+!:  ldx #0                                        // x will be our index when we loop over the version text, we start at 1 to skip the first color byte
+!sendconfirmation:                                // 
+    jsr !wait_for_ready_to_receive+               // wait for ready to receive (bit D7 goes high)
+    lda factoryreset,x                            // load a byte from the version text with index x
+    sta _IO1_                                     // send it to IO1
+    cmp #128                                      // if the last byte was 128, the buffer is finished
+    beq !+                                        // exit in that case
+    inx                                           // increase the x index
+    jmp !sendconfirmation-                        //
+                                                  //
                                                   // 
 !loop_forever:                                    //                              
     jsr !delay+                                   //           
@@ -1586,7 +1634,6 @@ jsr !splitRXbuffer-                              // copy the first element to Sp
     jsr !delay+                                   //
     jmp !reset_for_real-                          // Loop forever and wait for the ESP32 to reset the C64
                                                   // 
-
 
 
 
