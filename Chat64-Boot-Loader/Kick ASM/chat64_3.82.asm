@@ -1487,8 +1487,8 @@ rts
     jmp !mainmenu-                                //
 !:  lda #10 ; sta _LINE_POS_                      // Load 10 into accumulator and store it in zero page address $fb
     jsr !draw_menu_line+                          // Call the draw_menu_line sub routine to draw a line on row 8
-    displayText(text_osc_ip,6,1)             // Display static text "osc ip:" on line 4, row 1,  
-    displayText(text_osc_port,8,1)           // Display static text "osc port:" on line 6, row 1,  
+    displayText(text_osc_ip,5,1)             // Display static text "osc ip:" on line 4, row 1,  
+    displayText(text_osc_port,7,1)           // Display static text "osc port:" on line 6, row 1,  
     
     lda #10 ; sta _LINE_POS_                      // Load 10 into accumulator and store it in zero page address $fb
     jsr !draw_menu_line+                          // Call the draw_menu_line sub routine to draw a line on row 10
