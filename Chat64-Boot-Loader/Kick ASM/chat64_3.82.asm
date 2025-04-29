@@ -1527,7 +1527,7 @@ jsr !splitRXbuffer-                              // copy the first element to Sp
     sta LIMIT_LINE                                // Store 4 into limit_line variable so the cursor van not go below line 4
     lda #19                                       // Load 7 into accumulator
     sta HOME_COLM                                 // Store 7 into home_column variable, so the cursor can not go below 7
-    lda #35                                       // Load 39 into accumulator
+    lda #34                                       // Load 39 into accumulator
     sta LIMIT_COLM                                // Store 39 into the limit_column so the cursor can not go beyond that position
     lda #1                                        // Load 1 intop accumulator
     sta CLEAR_FIELD_FLAG                          // and SET clear text flag to 1 (default is zero)
