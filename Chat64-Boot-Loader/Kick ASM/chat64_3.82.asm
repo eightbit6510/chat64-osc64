@@ -1470,7 +1470,7 @@ rts
 !osc_setup:                                   // 
     lda #255                                      //
     sta DELAY                                     //
-    jsr !checkWiFi+                               // check if we have wifi   
+    jsr !checkWiFi-                               // check if we have wifi   
     jsr !start_menu_screen-                       // 
     lda #10 ; sta _LINE_POS_                      // Load 10 into accumulator and store it in zero page address $fb
     jsr !draw_menu_line+                          // Call the draw_menu_line sub routine to draw a line on row 8
@@ -1511,12 +1511,12 @@ rts
                                                   //
 !:  lda #1                                        // we need the first element from the RXBUFFER (osc ip)
     sta $02                                       // store 1 (1=first element) in $02
-jsr !splitRXbuffer+                               // copy the first element to Splitbuffer
+jsr !splitRXbuffer-                              // copy the first element to Splitbuffer
     displayText(SPLITBUFFER,4,14)                 // Display the buffer (containing osc ip) on screen
                                                   // 
     lda #2                                        // now we need the second element from the RX buffer (osc port)
     sta $02                                       // so we put #2 in address $02
-    jsr !splitRXbuffer+                           // and call the split routine to copy the element to the Splitbuffer
+    jsr !splitRXbuffer-                          // and call the split routine to copy the element to the Splitbuffer
     displayText(SPLITBUFFER,6,18)                 // Display the buffer (containing osc port) on screen
                                                   // Now we need a text input box so the user can change the ip and port
 !fill_fields:                                     // Set the limits to where the cursor can travel
@@ -1578,7 +1578,7 @@ jsr !splitRXbuffer+                               // copy the first element to S
     jsr !delay+                                   // a few times
     jsr !delay+                                   // a few times
     jsr !delay+                                   // a few times
-    jmp !osc_setup                           // Rinse and repeat
+    jmp !osc_setup-                           // Rinse and repeat
                                                   // 
                                                   // 
 !loop_forever:                                    //                              
