@@ -466,7 +466,7 @@ rts
 !FS:jmp !server_setup+                            // Yes, go to server setup
 !F5:cmp #135                                      // F5 key pressed?
     bne !F6+                                      // No, next
-    jmp !help_screen+                             // Yes, goto private messages help screen
+    jmp !osc_setup+                             // Yes, goto private messages help screen
 !F6:cmp #139                                      // F6 Pressed?
     bne !F7+                                      // No, next.
     jmp !about_screen+                            // Yes, show the about screen
