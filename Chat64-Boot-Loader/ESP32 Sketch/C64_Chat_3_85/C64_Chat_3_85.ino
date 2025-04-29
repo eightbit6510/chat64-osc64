@@ -1123,6 +1123,17 @@ void loop() {
           sendByte(128);
           break;
         }
+  case 227:
+        {
+          // ------------------------------------------------------------------------------
+          // start byte 227 = C64 ask for the osc ip and port
+          // ------------------------------------------------------------------------------
+          commandMessage.command = GetRegistrationStatusCommand;
+          xMessageBufferSend(commandBuffer, &commandMessage, sizeof(commandMessage), portMAX_DELAY);
+          xMessageBufferReceive(responseBuffer, &responseMessage, sizeof(responseMessage), portMAX_DELAY);
+          send_String_to_c64(oscServerIP + char(129) + oscServerPort);
+          break;
+        }
     }  // end of case statements
  
 #ifdef VICE_MODE
