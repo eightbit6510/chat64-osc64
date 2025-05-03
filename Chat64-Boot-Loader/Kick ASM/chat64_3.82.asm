@@ -469,7 +469,7 @@ rts
     jmp !osc_setup+                             // Yes, goto private messages help screen
 !F6:cmp #139                                      // F6 Pressed?
     bne !F7+                                      // No, next.
-    jmp !about_screen+                            // Yes, show the about screen
+    jmp !main_osc_screen:                         // Yes, show the osc send screen
 !F7:cmp #136                                      // F7 key pressed?
     bne !F8+                                      // No, next
     jsr !callstatus+                              // Yes, check the configuration status
@@ -1465,7 +1465,7 @@ rts
 //=========================================================================================================
 //    MENU OSC SETUP
 //=========================================================================================================
-// send byte 231 to get the osc destination ip and port
+// send byte 229 to get the osc destination ip and port
 //=========================================================================================================
 !osc_setup:                                   // 
     lda #255                                      //
@@ -1500,7 +1500,7 @@ rts
     jmp !fill_fields+                             // /   
                                                   // 
 !sendcmd:                                         // 
-!:  lda #227                                      // load the number #231
+!:  lda #227                                      // load the number #227
     sta CMD                                       // Store that in variable CMD
     jsr !send_start_byte_ff+                      // Call the sub routine to send 231 to the esp32 to ask for the osc ip and port
     lda TIMOUTERROR                               // RXBUFFER now contains Osc_IP[15]Osc_port[5]
@@ -1573,8 +1573,8 @@ jsr !splitRXbuffer-                              // copy the first element to Sp
     sta READLIMIT                                 //
     jsr !read_from_screen+                        // Read the ip address from screen into the TXBUFFER
     jsr !wait_for_ready_to_receive+               // Prepare the ESP to receive
-    lda #229                                      // Load 230 in accumulator
-    sta _IO1_                                     // Send the start byte (230 = send new registration code)
+    lda #229                                      // Load 229 in accumulator
+    sta _IO1_                                     // Send the start byte (229 = send new registration code)
     jsr !send_buffer+                             // Send the new registration code to the ESP32
                                                   // Read the port from screen into the TXBUFFER
     lda #$53                                      // 
@@ -1634,6 +1634,92 @@ jsr !splitRXbuffer-                              // copy the first element to Sp
     jsr !delay+                                   //
     jmp !reset_for_real-                          // Loop forever and wait for the ESP32 to reset the C64
                                                   // 
+//=========================================================================================================
+//     OSC SEND SCREEN
+//=========================================================================================================
+!main_osc_screen:                                 // 
+
+!osc_screen:                                      // Draw the divider line
+    lda #0                                        //
+    sta MENU_ID                                   //
+    lda #12                                       // color number 12 is gray
+    sta _LINE_COLOR_                              // store the color code in $c9
+    lda #21                                       // a line on screen line 21
+    sta _LINE_POS_                                // 
+    jsr !draw_menu_line+                          // 
+                                                  // 
+    lda VICEMODE                                  // 
+    cmp #1                                        // 
+    bne !+                                        //     
+    displayText(text_error_vice_mode,3,8)         // 
+                                                  // 
+!:  lda #0                                        // Set the limits to where the cursor can travel
+    sta HOME_COLM                                 // store 0 into home_column variable, so the cursor can not go below 0
+    lda #22                                       // load 22 into accumulator
+    sta HOME_LINE                                 // Store 22 into Home_line variable, so the cursor van not go above line 22
+    lda #24                                       // load 24 into accumulator
+    sta LIMIT_LINE                                // store 24 into limit_line variable so the cursor van not go below line 24
+    lda #39                                       // load 39 into accumulator
+    sta LIMIT_COLM                                // store 39 into the limit_column so the cursor can not go beyond that position
+!ti:                                              // 
+    jsr !text_input+                              // jump to the text input routine. We return from this routine when the users presses enter on the last input line     
+                                                  // at this point we have returned from the text_input routine and we must send the typed message to the esp32
+                                                  // so lets read the message fom screen, including the color information 
+                                                  // 
+                                                  // 
+                                                  // find the message length
+!:  ldx #32                                        // reset the message length variable to zero
+    stx MESSAGELEN                                // 
+                                                  // 
+                                                  // Next we need to store the character and color information into a buffer
+                                                  // the chat message always starts at $770 in screen RAM and $db70 in color RAM
+    ldx #0                                        // x is the index for reading the screen and color RAM
+    ldy #0                                        // y is the index for writing to the TXBUFFER
+    sty COLOR                                     // set the start color to 0
+                                                  // 
+!loop:                                            // 
+    
+                                                  // 
+!:  lda $770,x                                    // read the character screen code from screen RAM
+    sta TXBUFFER,y                                // store the character in the buffer
+    iny                                           // increase the index for TXBUFFER
+    inx                                           // increase the index for reading the screen and color RAM
+    cpx MESSAGELEN                                // if x reaches the message lengt value, we are at the end of message,
+    bne !loop-                                    // continue to loop while x < message length
+
+    
+!send:                                            // 
+    jsr !backup_message_lines+    
+    lda #$0f                                     // Convert the last used color into a petsci color code                                        
+    sta CURSORCOLOR                               // Store that in variable CURSORCOLOR                                   
+
+    lda #128                                      // load byte 128 in the accumulator
+    sta TXBUFFER,y                                // and put it in the buffer as an end marker
+                                                  // 
+    jsr !clear_message_lines+                     //
+    jsr !hide_cursor-                             //  
+    jsr !wait_for_ready_to_receive+               // At this point we have the chat message from the screen, in the txbuffer
+    lda #226                                      // Load 226 into accumulator    
+    sta _IO1_                                     // Send the start byte (226 = send new osc message)
+    jsr !send_buffer+                             // Send the message to the ESP32
+//    jsr !getResult+                               // 
+    lda #10                                       //
+    sta CHECKREPEAT                               //
+    sta CHECKINTERVAL                             //
+    lda #1                                        //
+    sta WAITFORMESSAGE                            //
+    lda #8                                        //
+    sta TIMER2                                    //
+    lda SEND_ERROR                                //
+    cmp #1                                        //
+    bne !exit+                                    //
+    jsr !sounderror+                              //
+    jsr !restore_message_lines+                   //
+    jmp !ti-                                      //
+!empty_message:                                   // 
+                                                  // 
+!exit:                                            // 
+    jmp !chat_screen-                             // jump back to the start of the chat screen routine.
 
 
 
@@ -3300,7 +3386,7 @@ text_menu_item_2:             .byte 147; .text "[ F2 ] Account Setup";.byte 128
 text_menu_item_3:             .byte 147; .text "[ F3 ] List Users";.byte 128
 text_menu_item_4:             .byte 147; .text "[ F4 ] Server Setup";.byte 128
 text_menu_item_6:             .byte 147; .text "[ F5 ] OSC Setup";.byte 128
-text_menu_item_5:             .byte 147; .text "[ F6 ] About This Software";.byte 128
+text_menu_item_5:             .byte 147; .text "[ F6 ] OSC Send Screen";.byte 128
 text_menu_item_8:             .byte 147; .text "[ F8 ] Output Setup";.byte 128
 text_version:                 .byte 151; .text "Version";.byte 128
 version:                      .byte 151; .text "3.82"; .byte 128
@@ -3331,6 +3417,7 @@ text_printer_error:           .byte 145; .text "Printer not found or offline"; .
 text_output_enable:           .byte 147; .text "[ F1 ] Enable Output to printer"; .byte 128                   
 text_output_disable:          .byte 147; .text "[ F3 ] Disable Output to printer"; .byte 128  
     
+text_osc_menu:                .byte 151; .text "OSC SEND"; .byte 128
 
 text_about_menu:              .byte 151; .text "ABOUT CHAT64"; .byte 128
 text_about_line_1:            .byte 145; .text "Initially developed by Bart Venneker" ; .byte 213,4
@@ -3533,7 +3620,7 @@ P_COLBLOCK700:                .fill 256,0         //
 debug_in:                     .byte 0             //                                 
 TIMEOUT1:                     .byte 0             //                                
 TIMEOUT2:                     .byte 0             //            
-// --- BEGIN ADDED CODE: OSC + Paddle Variables ---
+
 osc_target_ip:     .fill 32, $20
 osc_target_port:   .fill 6,  $20
 
@@ -3543,11 +3630,12 @@ potx2_target:      .fill 32, $20
 poty2_target:      .fill 32, $20
 
 cue_list:          .fill 10*32, $20 // 10 lines of 32 bytes each
+
 last_potx1:        .byte 0
 last_poty1:        .byte 0
 last_potx2:        .byte 0
 last_poty2:        .byte 0
-// --- END ADDED CODE: OSC + Paddle Variables ---
+
 
 //=========================================================================================================
 // MACROS
