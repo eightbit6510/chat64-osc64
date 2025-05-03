@@ -1640,7 +1640,7 @@ jsr !splitRXbuffer-                              // copy the first element to Sp
 !main_osc_screen:                                 // 
 
 !osc_screen:                                      // Draw the divider line
-    lda #0                                        //
+    lda #6                                        //
     sta MENU_ID                                   //
     lda #12                                       // color number 12 is gray
     sta _LINE_COLOR_                              // store the color code in $c9
@@ -1675,7 +1675,6 @@ jsr !splitRXbuffer-                              // copy the first element to Sp
                                                   // the chat message always starts at $770 in screen RAM and $db70 in color RAM
     ldx #0                                        // x is the index for reading the screen and color RAM
     ldy #0                                        // y is the index for writing to the TXBUFFER
-    sty COLOR                                     // set the start color to 0
                                                   // 
 !loop:                                            // 
     
@@ -1719,7 +1718,7 @@ jsr !splitRXbuffer-                              // copy the first element to Sp
 !empty_message:                                   // 
                                                   // 
 !exit:                                            // 
-    jmp !chat_screen-                             // jump back to the start of the chat screen routine.
+    jmp !osc_screen-                             // jump back to the start of the chat screen routine.
 
 
 
