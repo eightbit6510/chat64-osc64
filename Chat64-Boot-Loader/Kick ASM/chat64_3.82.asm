@@ -469,7 +469,7 @@ rts
     jmp !osc_setup+                             // Yes, goto private messages help screen
 !F6:cmp #139                                      // F6 Pressed?
     bne !F7+                                      // No, next.
-    jmp !main_osc_screen:                         // Yes, show the osc send screen
+    jmp !main_osc_screen+                         // Yes, show the osc send screen
 !F7:cmp #136                                      // F7 key pressed?
     bne !F8+                                      // No, next
     jsr !callstatus+                              // Yes, check the configuration status
@@ -1713,7 +1713,7 @@ jsr !splitRXbuffer-                              // copy the first element to Sp
     lda SEND_ERROR                                //
     cmp #1                                        //
     bne !exit+                                    //
-    jsr !sounderror+                              //
+    jsr !sounderror-                              //
     jsr !restore_message_lines+                   //
     jmp !ti-                                      //
 !empty_message:                                   // 
@@ -3416,8 +3416,6 @@ text_printer_disabled:        .byte 145; .text "Printer disabled            "; .
 text_printer_error:           .byte 145; .text "Printer not found or offline"; .byte 128                                                                                                                            
 text_output_enable:           .byte 147; .text "[ F1 ] Enable Output to printer"; .byte 128                   
 text_output_disable:          .byte 147; .text "[ F3 ] Disable Output to printer"; .byte 128  
-    
-text_osc_menu:                .byte 151; .text "OSC SEND"; .byte 128
 
 text_about_menu:              .byte 151; .text "ABOUT CHAT64"; .byte 128
 text_about_line_1:            .byte 145; .text "Initially developed by Bart Venneker" ; .byte 213,4
