@@ -1638,7 +1638,7 @@ jsr !splitRXbuffer-                              // copy the first element to Sp
 //     OSC SEND SCREEN
 //=========================================================================================================
 !main_osc_screen:                                 // 
-
+    jsr $e544
 !osc_screen:                                      // Draw the divider line
     lda #6                                        //
     sta MENU_ID                                   //
