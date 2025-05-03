@@ -3576,7 +3576,7 @@ song5: .byte 8,28,7,0,8,24,7,0,8,26,255
 //=========================================================================================================
 // VARIABLE BUFFERS
 //=========================================================================================================
-.segment Variables [start=$3200, virtual]
+.segment Variables [start=$4200, virtual]
 PRINTER_ENABLED_FLAG:     .byte 0         // Output to printer flag
 PRINTERBUFFER:                .fill 165,0
 USER_LIST_FLAG:               .byte 0             // User list source flag   
