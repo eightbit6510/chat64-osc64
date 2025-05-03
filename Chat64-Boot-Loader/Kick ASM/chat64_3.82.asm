@@ -406,7 +406,7 @@ rts
 !all:                                             // 
                                                   // 
     displayText(text_menu_item_3,9,3)             // [F3] - List Users
-    displayText(text_menu_item_6,13,3)            // [F5] - Help about private messaging
+    displayText(text_menu_item_6,13,3)            // [F5] - OSC Destination setup
     jsr !display_F7_menuItem+                     // [F7] - Exit
     displayText(text_menu_item_8,19,3)            // [F8] - Output setup  
     displayText(text_menu_item_4,11,3)            // [F4] - Server Setup                                              // 
@@ -421,7 +421,7 @@ rts
 !noconf:                                          // 
     displayText(text_main_menu,1,15)              // Text MAIN MENU
     displayText(text_menu_item_1,5,3)             // [F1] - WiFi Setup
-    displayText(text_menu_item_5,15,3)            // [F6] - About this Software
+    displayText(text_menu_item_5,15,3)            // [F6] - OSC Send screen
                                                   // 
     displayText(text_version,23,1)                // Software version info
     displayText(versionmask,23,9)                 // Software version info
