@@ -3374,7 +3374,7 @@ update_nmi:                                       // While the updates runs, we 
 !: jmp !-
   rts 
 
-.align = $100
+.align $100
 
 //=========================================================================================================
 // CONSTANTS
@@ -3532,7 +3532,7 @@ PRINTIT:                      .byte 0             //
 HAVEWIFI:                     .byte 0             //        
 TIMOUTERROR:                  .byte 0             //
 
-.align =$100
+.align $100
 
 SCREEN2ASCII:                                     //
 .byte   64, 65, 66, 67, 68, 69, 70, 71, 72, 73            //   0 -   9
