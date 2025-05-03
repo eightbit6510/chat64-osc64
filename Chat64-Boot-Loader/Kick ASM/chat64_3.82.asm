@@ -3374,6 +3374,8 @@ update_nmi:                                       // While the updates runs, we 
 !: jmp !-
   rts 
 
+.align = $100
+
 //=========================================================================================================
 // CONSTANTS
 //=========================================================================================================              
@@ -3485,7 +3487,9 @@ text_update_download1:        .byte 147,112; .fill 28,64 ; .byte 110,128
 text_update_download2:        .byte 147,93; .fill 28,32 ; .byte 93,128
 text_update_download3:        .byte 147,109; .fill 28,64 ; .byte 125,128
 sysmessage_update:            .byte 2,143,149;.text "New version available, Press F1!        "; .byte 128                                                                        
-                                                                        
+
+.align $100
+
 // data for big letters on the start screen
 big_letters: .byte 158,85,69,69,73,93,32,32,93,85,69,69,73,67,114,67,32,85,69,69,73,66,213,19
              .byte 158,71,32,32,32,93,32,32,93,93,32,32,93,32,93,32,32,84,32,32,32,66,32,32,93,213,16
@@ -3526,7 +3530,10 @@ WAITFORMESSAGE:               .byte 0             //
 RETURNTOMENU:                 .byte 0             //                                   
 PRINTIT:                      .byte 0             //                        
 HAVEWIFI:                     .byte 0             //        
-TIMOUTERROR:                  .byte 0             //      
+TIMOUTERROR:                  .byte 0             //
+
+.align =$100
+
 SCREEN2ASCII:                                     //
 .byte   64, 65, 66, 67, 68, 69, 70, 71, 72, 73            //   0 -   9
 .byte  74, 75, 76, 77, 78, 79, 80,81, 82, 83              //  10 -  19
